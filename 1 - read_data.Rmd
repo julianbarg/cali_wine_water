@@ -1,0 +1,144 @@
+---
+title: "1 - Preprocess data"
+author: "Julian Barg"
+date: "March 21, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.1 Read data
+
+### 1.1.1 USDA
+Read the full dataset.
+
+We specify the date columns to specify that they are parsed correctly.
+```{R read_usda}
+library(tidyverse)
+library(readxl)
+
+usda_full <- read_excel("data/USDA_Certified_Wine_2019-01-11.xlsx", na = c(NA, ""), 
+                        col_types = c(rep("text", 10), "date", "date", "text", "date", rep("text", 4), "date", rep("text", 4), "date", rep("text", 4),
+                                      "date", rep("text", 36), "date", "text"))
+head(usda_full)
+```
+
+Print row names.
+```{R row_names}
+colnames(usda_full)
+```
+
+Extract the columns that we actually need.
+```{R filter_usda}
+usda <- usda_full[c(-1, -2) ,c(4, 5, 1, 6, 13, 14, 15, 28, 29, 30, 33, 35, 38, 41, 43, 46)]
+```
+
+```{r usda}
+colnames(usda)
+```
+
+Concatenate physical address into one column.
+```{R concat_physical_address}
+usda$physical_address <- usda %>%
+  mutate(street = replace_na(.$`Physical Address: Street 1`, "")) %>%
+  mutate(zip = replace_na(.$`Physical Address: ZIP/ Postal Code`, "")) %>%
+  mutate(city = replace_na(.$`Physical Address: City`, "")) %>%
+  mutate(physical_address = paste0(street, "\n", zip, " ", city)) %>%
+  .$physical_address
+
+# Covering the case thate all three columns are empty, and the only thing that ends up in the column are our seperators.
+usda$physical_address[usda$physical_address == "\n "] = NA
+head(usda$physical_address, 10)
+```
+
+Remove old address columns.
+```{r find_address_cols}
+colnames(usda)
+```
+
+```{r remove_address_cols}
+usda <- usda[-c(11, 12, 13)]
+```
+
+Where physical address is unavailable, substitute mailing address.
+```{r concatenate}
+usda$mailing_address <- usda %>%
+  mutate(street = replace_na(.$`Mailing Address: Street 1`, "")) %>%
+  mutate(zip = replace_na(.$`Mailing Address: ZIP/ Postal Code`, "")) %>%
+  mutate(city = replace_na(.$`Mailing Address: City`, "")) %>%
+  mutate(mailing_address = paste0(street, "\n", zip, " ", city)) %>%
+  .$mailing_address
+
+# Covering the case thate all three columns are empty, and the only thing that ends up in the column are our seperators.
+usda$mailing_address[usda$mailing_address == "\n "] = NA
+head(usda$mailing_address, 10)
+```
+
+```{r fill_missing_address}
+usda$physical_address[is.na(usda$physical_address)] <- usda$mailing_address[is.na(usda$physical_address)]
+
+sum(is.na(usda$physical_address))
+```
+
+Remove unwanted mailing address columns.
+```{r find_mailing_cols}
+colnames(usda)
+```
+
+```{r remove_mailing}
+usda <- usda[ -c(11, 12, 13, 15)]
+
+usda <- plyr::rename(usda, c("physical_address" = "address"))
+```
+
+Identify wineries.
+We are only interested in certified organic wineries.
+```{r identify_wineries}
+usda$winery <- FALSE
+
+certified_wine <- str_detect(usda$`Certified Products Under HANDLING Scope`, pattern="wine|Wine")
+certified_wine[is.na(certified_wine)] <- FALSE
+usda$winery[certified_wine] <- TRUE
+sum(usda$winery)
+```
+
+Identify vineyards.
+If the observation is also a winery or has has something wine related in the name, and grows grapes, we will assume the grapes are for wine.
+```{r identify_vineyards}
+usda$vineyard <- FALSE
+
+wine_grapes <- str_detect(usda$`Certified Products Under CROPS Scope`, pattern="wine|Wine")
+usda$vineyard[wine_grapes] <- TRUE
+
+
+vineyard_name <- str_detect(usda$`Operation Name`, pattern="vineyard|Vineyard|wine|Wine")
+grapes <-str_detect(usda$`Certified Products Under CROPS Scope`, pattern="grape|Grape")
+grapes[is.na(grapes)] <- FALSE
+
+usda$vineyard[((certified_wine | vineyard_name) & grapes)] <- TRUE
+```
+
+Drop observations that are not vineyards or wineries.
+```{r drop_others}
+usda <- usda[usda$winery | usda$vineyard, ]
+```
+
+Drop columns that we do not need anymore now
+```{r colnames_vineyards_winery}
+colnames(usda)
+```
+
+```{r drop vineyards_winery_columns}
+usda <- usda[ -c(7, 10)]
+
+head(usda)
+```
+
+Handle renamed observations
+
+Handle ended certifications
+
+
+
