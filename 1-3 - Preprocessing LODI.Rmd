@@ -1,0 +1,77 @@
+---
+title: "1-3 - Preprocessing LODI"
+author: "Julian Barg"
+date: "March 23, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.3 Lodi sustainable
+
+### Read the full dataset
+
+```{r read_lodi}
+library(readr)
+library(tidyverse)
+
+lodi_full <- read_csv("data/lodi.csv")
+glimpse(lodi_full)
+```
+
+### Drop unwanted columns and NAs
+```{r drop_contact}
+lodi <- subset(lodi_full, select = -c(contact, phone))
+
+lodi <- lodi[!is.na(lodi$name), ]
+```
+
+
+### Downsample to year
+```{r downsample_biodynamic}
+library(lubridate)
+
+lodi <- lodi %>%
+  mutate(year = year(date)) %>%
+  group_by(name, year) %>%
+  mutate(last = last(date)) %>%
+  filter(date == last) %>%
+  ungroup() %>%
+  select(-c(year, last))
+
+glimpse(lodi, 5)
+nrow(lodi)
+```
+
+### Assume continuous existence
+```{r fill}
+lodi$year <- year(lodi$date)
+test = c()
+
+for (n in lodi$name){
+  from = min(lodi[lodi$name == n, ]$year)
+  to = max(lodi[lodi$name == n, ]$year)
+  test <- c(test, from, to)
+  for (y in from:to){
+    if (!(y %in% lodi[lodi$name == n, ]$year)){
+      lodi <- plyr::rbind.fill(lodi, data.frame(name = n, year = y))
+    }
+  }
+}
+
+nrow(lodi)
+```
+
+### Drop the date column
+
+Moving forward, we will only use the year column.
+```{r delete_date}
+lodi <- subset(lodi, select = -date)
+```
+
+### Save to rds
+```{r rds}
+saveRDS(lodi, "preprocessed_data/lodi.rds")
+```
