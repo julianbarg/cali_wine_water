@@ -1,0 +1,98 @@
+---
+title: "1-2 - Preprocessing biodynamic vineyards & wineries"
+author: "Julian Barg"
+date: "March 23, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.2 Biodynamic
+
+```{r read_biodynamic}
+library(tidyverse)
+library(readr)
+
+biodynamic_full <- read_csv("~/Documents/cali_wine_water/data/biodynamic_history.csv", col_types = "ccccDccccccflcl")
+head(biodynamic_full)
+nrow(biodynamic_full)
+```
+
+### Filter for California
+```{r filter_CA}
+biodynamic <- biodynamic_full[biodynamic_full$state == "CA", ]
+
+nrow(biodynamic)
+```
+
+### Filter for winery/vineyards
+```{r filter_vineyards_winery}
+biodynamic <- biodynamic[(biodynamic$vineyard %in% TRUE) | (biodynamic$winery %in% TRUE), ]
+
+nrow(biodynamic)
+```
+
+### Select only required columns
+```{r list_biodynamic_cols}
+colnames(biodynamic)
+```
+
+```{r filter-biodynamic_cols}
+biodynamic <- biodynamic[ -c(1, 3, 4, 6, 7, 9, 10, 11, 12, 14)]
+
+head(biodynamic)
+```
+
+### Downsample to year
+```{r downsample_biodynamic}
+library(lubridate)
+
+biodynamic <- biodynamic %>%
+  mutate(year = year(date)) %>%
+  group_by(name, year) %>%
+  mutate(last = last(date)) %>%
+  filter(date == last) %>%
+  ungroup() %>%
+  select(-c(year, last))
+
+head(biodynamic, 5)
+nrow(biodynamic)
+```
+
+### Assume continuous existence
+```{r fill}
+biodynamic$year <- year(biodynamic$date)
+
+for (n in biodynamic$name){
+  from = min(biodynamic[biodynamic$name == n, ]$year)
+  to = max(biodynamic[biodynamic$name == n, ]$year)
+  for (y in from:to){
+    if (!(y %in% biodynamic[biodynamic$name == n, ]$year)){
+      biodynamic <- plyr::rbind.fill(biodynamic, data.frame(name = n, year = y))
+    }
+  }
+}
+
+nrow(biodynamic)
+```
+
+### Assume that vineyards were always vienyards and wineries were always wineries, and backward fill addresses.
+```{r backward_fill}
+biodynamic <- biodynamic[order(biodynamic$name, biodynamic$year, decreasing=TRUE), ]
+
+biodynamic <- biodynamic %>%
+  group_by(name) %>%
+  fill(address, vineyard, winery, .direction = c("down")) %>%
+  ungroup()
+
+head(biodynamic)
+```
+
+### Drop date column
+
+Moving forward, we will only use the year column
+```{r delete_date}
+biodynamic <- subset(biodynamic, select = -date)
+```
