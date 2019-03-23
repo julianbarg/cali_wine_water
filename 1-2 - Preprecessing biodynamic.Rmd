@@ -11,12 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1.2 Biodynamic
 
+### Read the full dataset
+
 ```{r read_biodynamic}
 library(tidyverse)
 library(readr)
 
 biodynamic_full <- read_csv("~/Documents/cali_wine_water/data/biodynamic_history.csv", col_types = "ccccDccccccflcl")
-head(biodynamic_full)
+glimpse(biodynamic_full)
 nrow(biodynamic_full)
 ```
 
@@ -42,7 +44,7 @@ colnames(biodynamic)
 ```{r filter-biodynamic_cols}
 biodynamic <- biodynamic[ -c(1, 3, 4, 6, 7, 9, 10, 11, 12, 14)]
 
-head(biodynamic)
+glimpse(biodynamic)
 ```
 
 ### Downsample to year
@@ -57,7 +59,7 @@ biodynamic <- biodynamic %>%
   ungroup() %>%
   select(-c(year, last))
 
-head(biodynamic, 5)
+glimpse(biodynamic, 5)
 nrow(biodynamic)
 ```
 
@@ -87,12 +89,17 @@ biodynamic <- biodynamic %>%
   fill(address, vineyard, winery, .direction = c("down")) %>%
   ungroup()
 
-head(biodynamic)
+glimpse(biodynamic)
 ```
 
 ### Drop date column
 
-Moving forward, we will only use the year column
+Moving forward, we will only use the year column.
 ```{r delete_date}
 biodynamic <- subset(biodynamic, select = -date)
+```
+
+### Save to rds
+```{r rds}
+saveRDS(biodynamic, "preprocessed_data/biodynamic.rds")
 ```

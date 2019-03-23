@@ -51,7 +51,7 @@ usda$physical_address <- usda %>%
 
 # Covering the case thate all three columns are empty, and the only thing that ends up in the column are our seperators.
 usda$physical_address[usda$physical_address == "\n "] = NA
-head(usda$physical_address, 10)
+glimpse(usda$physical_address, 10)
 ```
 
 Remove old address columns.
@@ -74,7 +74,7 @@ usda$mailing_address <- usda %>%
 
 # Covering the case thate all three columns are empty, and the only thing that ends up in the column are our seperators.
 usda$mailing_address[usda$mailing_address == "\n "] = NA
-head(usda$mailing_address, 10)
+glimpse(usda$mailing_address, 10)
 ```
 
 ```{r fill_missing_address}
@@ -136,7 +136,7 @@ colnames(usda)
 ```{r drop vineyards_winery_columns}
 usda <- usda[ -c(7, 10)]
 
-head(usda)
+glimpse(usda)
 ```
 
 ### Handle renamed observations
@@ -218,7 +218,7 @@ usda <- plyr::rename(usda, replace = c("Operation ID" = "id", "Operation Name" =
 
 ### Preview result and save to rds
 ```{r result}
-head(usda)
+glimpse(usda)
 
 saveRDS(usda, file = "preprocessed_data/USDA.rds")
 ```

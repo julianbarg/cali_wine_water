@@ -401,17 +401,8 @@ usda_full &lt;- read_excel(&quot;data/USDA_Certified_Wine_2019-01-11.xlsx&quot;,
 
 # Covering the case thate all three columns are empty, and the only thing that ends up in the column are our seperators.
 usda$physical_address[usda$physical_address == &quot;\n &quot;] = NA
-head(usda$physical_address, 10)</code></pre>
-<pre><code>##  [1] &quot;5579 Old San Jose Rd.\n95073 Soquel&quot;         
-##  [2] &quot;5555 E. Olympic Boulevard\n90022 Los Angeles&quot;
-##  [3] &quot;2660 Picachio Rd\n93430 Cayucos&quot;             
-##  [4] &quot;25015 Mountain Charlie Rd.\n95033 Los Gatos&quot; 
-##  [5] &quot;501 White Cottage Road North\n94508 Angwin&quot;  
-##  [6] &quot;501 White Cottage North\n94508 Angwin&quot;       
-##  [7] &quot;2545 Las Amigas Rd.\n94559 Napa&quot;             
-##  [8] NA                                            
-##  [9] &quot;Salinas Road 303a\n95076 Pajaro&quot;             
-## [10] &quot;1050 Happy Valley Road\n95065 Santa Cruz&quot;</code></pre>
+glimpse(usda$physical_address, 10)</code></pre>
+<pre><code>##  chr [1:636] &quot;5579 Old San Jose Rd.\n95073 Soquel&quot; ...</code></pre>
 <p>Remove old address columns.</p>
 <pre class="r"><code>colnames(usda)</code></pre>
 <pre><code>##  [1] &quot;Operation ID&quot;                           
@@ -442,17 +433,8 @@ head(usda$physical_address, 10)</code></pre>
 
 # Covering the case thate all three columns are empty, and the only thing that ends up in the column are our seperators.
 usda$mailing_address[usda$mailing_address == &quot;\n &quot;] = NA
-head(usda$mailing_address, 10)</code></pre>
-<pre><code>##  [1] &quot;5579 Old San Jose Rd.\n95073 Soquel&quot;         
-##  [2] &quot;5555 E. Olympic Boulevard\n90022 Los Angeles&quot;
-##  [3] &quot;P.O. Box 644\n93430 Cayucos&quot;                 
-##  [4] &quot;25015 Mountain Charlie Rd.\n95033 Los Gatos&quot; 
-##  [5] &quot;501 White Cottage Road North\n94508 Angwin&quot;  
-##  [6] &quot;501 White Cottage North\n94508 Angwin&quot;       
-##  [7] &quot;2545 Las Amigas Rd.\n94559 Napa&quot;             
-##  [8] &quot;P.O. Box 504\n95451 KELSEYVILLE&quot;             
-##  [9] &quot;306 Hawthorne St.\n93901 Salinas&quot;            
-## [10] &quot;P.O. Box 1049\n95077 Watsonville&quot;</code></pre>
+glimpse(usda$mailing_address, 10)</code></pre>
+<pre><code>##  chr [1:636] &quot;5579 Old San Jose Rd.\n95073 Soquel&quot; ...</code></pre>
 <pre class="r"><code>usda$physical_address[is.na(usda$physical_address)] &lt;- usda$mailing_address[is.na(usda$physical_address)]
 
 sum(is.na(usda$physical_address))</code></pre>
@@ -522,20 +504,20 @@ usda$vineyard[((certified_wine | vineyard_name) &amp; grapes)] &lt;- TRUE</code>
 ## [13] &quot;vineyard&quot;</code></pre>
 <pre class="r"><code>usda &lt;- usda[ -c(7, 10)]
 
-head(usda)</code></pre>
-<pre><code>## # A tibble: 6 x 11
-##   `Operation ID` `Operation Name` `Certifier Name` `Other/Former N…
-##   &lt;chr&gt;          &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;           
-## 1 5561001279     Adastra Vineyar… CCOF Certificat… &lt;NA&gt;            
-## 2 6220004906     ADOBE CREEK VIN… Organic Certifi… &lt;NA&gt;            
-## 3 5561000775     Agrovice, Inc.   CCOF Certificat… FORMERLY:Agrovi…
-## 4 5561001548     Alger Vineyards  CCOF Certificat… &lt;NA&gt;            
-## 5 5561001306     Amapola Creek V… CCOF Certificat… &lt;NA&gt;            
-## 6 0007770019     Ambyth Estate    Under Control o… 7770000019 (For…
-## # … with 7 more variables: `CROPS Scope Certification Status` &lt;chr&gt;,
-## #   `Effective Date of CROPS Status` &lt;dttm&gt;, `HANDLING Scope Certification
-## #   Status` &lt;chr&gt;, `Effective Date of HANDLING Status` &lt;dttm&gt;,
-## #   address &lt;chr&gt;, winery &lt;lgl&gt;, vineyard &lt;lgl&gt;</code></pre>
+glimpse(usda)</code></pre>
+<pre><code>## Observations: 279
+## Variables: 11
+## $ `Operation ID`                        &lt;chr&gt; &quot;5561001279&quot;, &quot;6220004906&quot;…
+## $ `Operation Name`                      &lt;chr&gt; &quot;Adastra Vineyards&quot;, &quot;ADOB…
+## $ `Certifier Name`                      &lt;chr&gt; &quot;CCOF Certification Servic…
+## $ `Other/Former Names`                  &lt;chr&gt; NA, NA, &quot;FORMERLY:Agrovice…
+## $ `CROPS Scope Certification Status`    &lt;chr&gt; &quot;Certified&quot;, &quot;Certified&quot;, …
+## $ `Effective Date of CROPS Status`      &lt;dttm&gt; 2005-06-01, 2006-08-31, 2…
+## $ `HANDLING Scope Certification Status` &lt;chr&gt; NA, NA, NA, NA, NA, &quot;Certi…
+## $ `Effective Date of HANDLING Status`   &lt;dttm&gt; NA, NA, NA, NA, NA, 2003-…
+## $ address                               &lt;chr&gt; &quot;2545 Las Amigas Rd.\n9455…
+## $ winery                                &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE…
+## $ vineyard                              &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TR…</code></pre>
 </div>
 <div id="handle-renamed-observations" class="section level3">
 <h3>Handle renamed observations</h3>
@@ -623,17 +605,17 @@ sum(!is.na(matches$match))</code></pre>
 </div>
 <div id="preview-result-and-save-to-rds" class="section level3">
 <h3>Preview result and save to rds</h3>
-<pre class="r"><code>head(usda)</code></pre>
-<pre><code>## # A tibble: 6 x 8
-##   id    name  `Certifier Name` vineyard_since      winery_since       
-##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;            &lt;dttm&gt;              &lt;dttm&gt;             
-## 1 5561… Adas… CCOF Certificat… 2005-06-01 00:00:00 NA                 
-## 2 6220… ADOB… Organic Certifi… 2006-08-31 00:00:00 NA                 
-## 3 5561… Agro… CCOF Certificat… 2003-09-06 00:00:00 NA                 
-## 4 5561… Alge… CCOF Certificat… 2008-02-22 00:00:00 NA                 
-## 5 5561… Amap… CCOF Certificat… 2008-01-03 00:00:00 NA                 
-## 6 0007… Amby… Under Control o… 2003-02-18 00:00:00 2003-02-18 00:00:00
-## # … with 3 more variables: address &lt;chr&gt;, winery &lt;lgl&gt;, vineyard &lt;lgl&gt;</code></pre>
+<pre class="r"><code>glimpse(usda)</code></pre>
+<pre><code>## Observations: 278
+## Variables: 8
+## $ id               &lt;chr&gt; &quot;5561001279&quot;, &quot;6220004906&quot;, &quot;5561000775&quot;, &quot;5561…
+## $ name             &lt;chr&gt; &quot;Adastra Vineyards&quot;, &quot;ADOBE CREEK VINEYARD&quot;, &quot;A…
+## $ `Certifier Name` &lt;chr&gt; &quot;CCOF Certification Services, LLC&quot;, &quot;Organic Ce…
+## $ vineyard_since   &lt;dttm&gt; 2005-06-01, 2006-08-31, 2003-09-06, 2008-02-22…
+## $ winery_since     &lt;dttm&gt; NA, NA, NA, NA, NA, 2003-02-18, NA, 2002-04-29…
+## $ address          &lt;chr&gt; &quot;2545 Las Amigas Rd.\n94559 Napa&quot;, &quot;P.O. Box 50…
+## $ winery           &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE,…
+## $ vineyard         &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE…</code></pre>
 <pre class="r"><code>saveRDS(usda, file = &quot;preprocessed_data/USDA.rds&quot;)</code></pre>
 </div>
 </div>

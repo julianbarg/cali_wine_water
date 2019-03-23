@@ -199,6 +199,8 @@ $(document).ready(function () {
 
 <div id="biodynamic" class="section level2">
 <h2>1.2 Biodynamic</h2>
+<div id="read-the-full-dataset" class="section level3">
+<h3>Read the full dataset</h3>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.1.0       ✔ purrr   0.3.2  
@@ -211,20 +213,27 @@ $(document).ready(function () {
 <pre class="r"><code>library(readr)
 
 biodynamic_full &lt;- read_csv(&quot;~/Documents/cali_wine_water/data/biodynamic_history.csv&quot;, col_types = &quot;ccccDccccccflcl&quot;)
-head(biodynamic_full)</code></pre>
-<pre><code>## # A tibble: 6 x 15
-##   acreage address business crops date       email link  name  phone
-##   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;date&gt;     &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
-## 1 &lt;NA&gt;    &quot;555 C… &lt;NA&gt;     &lt;NA&gt;  2014-10-09 &lt;NA&gt;  http… ADAM… &lt;NA&gt; 
-## 2 &lt;NA&gt;    &quot;Villa… &lt;NA&gt;     &lt;NA&gt;  2014-10-09 &lt;NA&gt;  http… Alqu… &lt;NA&gt; 
-## 3 &lt;NA&gt;    &quot;5401 … &lt;NA&gt;     &lt;NA&gt;  2014-10-09 &lt;NA&gt;  http… Amba… &lt;NA&gt; 
-## 4 &lt;NA&gt;    &quot;510 S… &lt;NA&gt;     &lt;NA&gt;  2014-10-09 &lt;NA&gt;  http… AmBy… &lt;NA&gt; 
-## 5 &lt;NA&gt;    &quot;312 N… &lt;NA&gt;     &lt;NA&gt;  2014-10-09 &lt;NA&gt;  http… Ampe… &lt;NA&gt; 
-## 6 &lt;NA&gt;    &quot;1650 … &lt;NA&gt;     &lt;NA&gt;  2014-10-09 &lt;NA&gt;  http… Amy'… &lt;NA&gt; 
-## # … with 6 more variables: processed_products &lt;chr&gt;, profile &lt;chr&gt;,
-## #   state &lt;fct&gt;, vineyard &lt;lgl&gt;, website &lt;chr&gt;, winery &lt;lgl&gt;</code></pre>
+glimpse(biodynamic_full)</code></pre>
+<pre><code>## Observations: 1,252
+## Variables: 15
+## $ acreage            &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ address            &lt;chr&gt; &quot;555 College Avenue\nAngwin, CA 94508&quot;, &quot;Vill…
+## $ business           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ crops              &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ date               &lt;date&gt; 2014-10-09, 2014-10-09, 2014-10-09, 2014-10-…
+## $ email              &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ link               &lt;chr&gt; &quot;https://web.archive.org/web/20141009050729/h…
+## $ name               &lt;chr&gt; &quot;ADAMVS&quot;, &quot;Alquimia Agricola&quot;, &quot;Ambassador Or…
+## $ phone              &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ processed_products &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ profile            &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ state              &lt;fct&gt; CA, NA, IL, CA, CA, CA, NY, CA, NV, CA, CO, M…
+## $ vineyard           &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ website            &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ winery             &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
 <pre class="r"><code>nrow(biodynamic_full)</code></pre>
 <pre><code>## [1] 1252</code></pre>
+</div>
 <div id="filter-for-california" class="section level3">
 <h3>Filter for California</h3>
 <pre class="r"><code>biodynamic &lt;- biodynamic_full[biodynamic_full$state == &quot;CA&quot;, ]
@@ -249,16 +258,14 @@ nrow(biodynamic)</code></pre>
 ## [13] &quot;vineyard&quot;           &quot;website&quot;            &quot;winery&quot;</code></pre>
 <pre class="r"><code>biodynamic &lt;- biodynamic[ -c(1, 3, 4, 6, 7, 9, 10, 11, 12, 14)]
 
-head(biodynamic)</code></pre>
-<pre><code>## # A tibble: 6 x 5
-##   address                       date       name             vineyard winery
-##   &lt;chr&gt;                         &lt;date&gt;     &lt;chr&gt;            &lt;lgl&gt;    &lt;lgl&gt; 
-## 1 &quot;12625 Old River Road\nHopla… 2015-10-22 Fetzer Vineyard… TRUE     TRUE  
-## 2 &quot;14000 Tomki Road\nRedwood V… 2015-10-22 Frey Vineyards,… TRUE     NA    
-## 3 &quot;569 First Street West\nSono… 2015-10-22 Enterprise Vine… TRUE     NA    
-## 4 &quot;22000 Highway 29\nMiddletow… 2015-10-22 Beaver Creek Vi… TRUE     NA    
-## 5 &quot;2065 Via De Los Ranchos\nLo… 2015-10-22 Beckmen-Purisim… TRUE     NA    
-## 6 &quot;1883 London Ranch Road\nGle… 2015-10-22 Benziger Family… NA       TRUE</code></pre>
+glimpse(biodynamic)</code></pre>
+<pre><code>## Observations: 198
+## Variables: 5
+## $ address  &lt;chr&gt; &quot;12625 Old River Road\nHopland, CA 95449&quot;, &quot;14000 Tomki…
+## $ date     &lt;date&gt; 2015-10-22, 2015-10-22, 2015-10-22, 2015-10-22, 2015-1…
+## $ name     &lt;chr&gt; &quot;Fetzer Vineyards Winery&quot;, &quot;Frey Vineyards, Ltd.&quot;, &quot;Ent…
+## $ vineyard &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, NA, TRUE, NA, TRUE, TRUE,…
+## $ winery   &lt;lgl&gt; TRUE, NA, NA, NA, NA, TRUE, NA, TRUE, NA, NA, NA, TRUE,…</code></pre>
 </div>
 <div id="downsample-to-year" class="section level3">
 <h3>Downsample to year</h3>
@@ -276,15 +283,14 @@ head(biodynamic)</code></pre>
   ungroup() %&gt;%
   select(-c(year, last))
 
-head(biodynamic, 5)</code></pre>
-<pre><code>## # A tibble: 5 x 5
-##   address                          date       name          vineyard winery
-##   &lt;chr&gt;                            &lt;date&gt;     &lt;chr&gt;         &lt;lgl&gt;    &lt;lgl&gt; 
-## 1 &quot;2155 Pickett Road\nCalistoga, … 2015-10-23 Araujo Estate TRUE     TRUE  
-## 2 &quot;312 North Ninth St.\nLompoc, C… 2015-10-23 Ampelos Cell… TRUE     TRUE  
-## 3 &quot;510 Sequoia Lane\nTempleton, C… 2015-10-23 AmByth Estate TRUE     TRUE  
-## 4 &quot;255 W. Napa Street, Ste. W\nSo… 2019-01-21 Eco Terreno … TRUE     NA    
-## 5 &quot;3030 Porter Creek Road\nSanta … 2019-01-21 Bearg Ranch … TRUE     NA</code></pre>
+glimpse(biodynamic, 5)</code></pre>
+<pre><code>## Observations: 133
+## Variables: 5
+## $ address  &lt;chr&gt; …
+## $ date     &lt;date&gt; …
+## $ name     &lt;chr&gt; …
+## $ vineyard &lt;lgl&gt; …
+## $ winery   &lt;lgl&gt; …</code></pre>
 <pre class="r"><code>nrow(biodynamic)</code></pre>
 <pre><code>## [1] 133</code></pre>
 </div>
@@ -314,21 +320,24 @@ biodynamic &lt;- biodynamic %&gt;%
   fill(address, vineyard, winery, .direction = c(&quot;down&quot;)) %&gt;%
   ungroup()
 
-head(biodynamic)</code></pre>
-<pre><code>## # A tibble: 6 x 6
-##   address                      date       name        vineyard winery  year
-##   &lt;chr&gt;                        &lt;date&gt;     &lt;chr&gt;       &lt;lgl&gt;    &lt;lgl&gt;  &lt;dbl&gt;
-## 1 &quot;555 College Avenue\nAngwin… 2015-01-05 ADAMVS      TRUE     NA      2015
-## 2 &quot;510 Sequoia Lane\nTempleto… 2015-10-23 AmByth Est… TRUE     TRUE    2015
-## 3 &quot;312 North Ninth St.\nLompo… 2015-10-23 Ampelos Ce… TRUE     TRUE    2015
-## 4 &quot;6545 Highway 12\nSanta Ros… 2019-01-21 Annadel Ga… TRUE     NA      2019
-## 5 &quot;6545 Highway 12\nSanta Ros… 2019-01-21 Annadel Ga… TRUE     NA      2019
-## 6 &quot;6545 Highway 12\nSanta Ros… 2019-01-21 Annadel Ga… TRUE     NA      2019</code></pre>
+glimpse(biodynamic)</code></pre>
+<pre><code>## Observations: 207
+## Variables: 6
+## $ address  &lt;chr&gt; &quot;555 College Avenue\nAngwin, CA 94508, United States&quot;, …
+## $ date     &lt;date&gt; 2015-01-05, 2015-10-23, 2015-10-23, 2019-01-21, 2019-0…
+## $ name     &lt;chr&gt; &quot;ADAMVS&quot;, &quot;AmByth Estate&quot;, &quot;Ampelos Cellars&quot;, &quot;Annadel …
+## $ vineyard &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+## $ winery   &lt;lgl&gt; NA, TRUE, TRUE, NA, NA, NA, NA, NA, TRUE, TRUE, TRUE, T…
+## $ year     &lt;dbl&gt; 2015, 2015, 2015, 2019, 2019, 2019, 2018, 2017, 2019, 2…</code></pre>
 </div>
 <div id="drop-date-column" class="section level3">
 <h3>Drop date column</h3>
-<p>Moving forward, we will only use the year column</p>
+<p>Moving forward, we will only use the year column.</p>
 <pre class="r"><code>biodynamic &lt;- subset(biodynamic, select = -date)</code></pre>
+</div>
+<div id="save-to-rds" class="section level3">
+<h3>Save to rds</h3>
+<pre class="r"><code>saveRDS(biodynamic, &quot;preprocessed_data/biodynamic.rds&quot;)</code></pre>
 </div>
 </div>
 
