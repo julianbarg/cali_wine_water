@@ -1,5 +1,5 @@
 ---
-title: "1 - Preprocess data"
+title: "1-1 - Preprocessing USDA"
 author: "Julian Barg"
 date: "March 21, 2019"
 output: html_document
@@ -9,10 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 1.1 Read data
+## 1.1 USDA
 
-### 1.1.1 USDA
-Read the full dataset.
+### Read the full dataset.
 
 We specify the date columns to specify that they are parsed correctly.
 ```{R read_usda}
@@ -30,7 +29,7 @@ Print row names.
 colnames(usda_full)
 ```
 
-Extract the columns that we actually need.
+### Extract the columns that we actually need.
 ```{R filter_usda}
 usda <- usda_full[c(-1, -2) ,c(4, 5, 1, 6, 13, 14, 15, 28, 29, 30, 33, 35, 38, 41, 43, 46)]
 ```
@@ -38,6 +37,8 @@ usda <- usda_full[c(-1, -2) ,c(4, 5, 1, 6, 13, 14, 15, 28, 29, 30, 33, 35, 38, 4
 ```{r usda}
 colnames(usda)
 ```
+
+### Fix address info
 
 Concatenate physical address into one column.
 ```{R concat_physical_address}
@@ -93,7 +94,8 @@ usda <- usda[ -c(11, 12, 13, 15)]
 usda <- plyr::rename(usda, c("physical_address" = "address"))
 ```
 
-Identify wineries.
+### Identify wineries.
+
 We are only interested in certified organic wineries.
 ```{r identify_wineries}
 usda$winery <- FALSE
@@ -104,7 +106,8 @@ usda$winery[certified_wine] <- TRUE
 sum(usda$winery)
 ```
 
-Identify vineyards.
+### Identify vineyards.
+
 If the observation is also a winery or has has something wine related in the name, and grows grapes, we will assume the grapes are for wine.
 ```{r identify_vineyards}
 usda$vineyard <- FALSE
@@ -136,9 +139,86 @@ usda <- usda[ -c(7, 10)]
 head(usda)
 ```
 
-Handle renamed observations
+### Handle renamed observations
 
-Handle ended certifications
+Clean the column with former names/IDs
+```{r clean_former}
+former_names_clean <- usda$`Other/Former Names`
 
+former_names_clean <- str_remove(former_names_clean, ".+\\(Former\\sOperation\\sID\\)$")
+former_names_clean[former_names_clean==""] <- NA
+former_names_clean <- str_remove(former_names_clean, "(^Formerly)")
+former_names_clean <- str_remove(former_names_clean, "(^FORMERLY)")
+former_names_clean <- str_remove(former_names_clean, "(^Previously)")
+former_names_clean <- str_remove(former_names_clean, pattern = ";\\sChanged.+")
+former_names_clean <- str_remove(former_names_clean, pattern = "\\sKnow\\sAs\\s")
+former_names_clean <- str_remove(former_names_clean, pattern = "(^:?)")
+former_names_clean <- str_remove(former_names_clean, pattern = "(^\\s?)")
+former_names_clean <- str_remove(former_names_clean, pattern = "(\\s$)?")
+# At beginning and end!
+former_names_clean <- str_remove(former_names_clean, pattern = "\"")
 
+usda$former_names <- former_names_clean
+```
 
+See number of matches
+
+```{r matches}
+matches = data.frame()
+
+i=1
+
+for (former_name in usda$former_names) {
+  match <- str_which(usda$`Operation Name`, former_name)
+  matches <- rbind(matches, c(i, ifelse(length(match) == 0, NA, match)))
+  i = i+1
+}
+names(matches) <- c("index", "match")
+
+sum(!is.na(matches$match))
+```
+
+Remove duplicate
+Visual inspection of the 7 matches indicates only one real duplicate (matching address, old entry remains in data set). Other cases are probably partial sales of vineyards/wineries. We manually remove the duplicate and clean up the columns.
+```{r rempove_duplicate}
+usda <- usda[-30, ]
+```
+
+```{r list_name_colunmns}
+colnames(usda)
+```
+
+```{r delete_name_columns}
+usda <- usda[ -c(4, 12)]
+```
+
+### Handle lapsed certifications
+```{r certification_stats}
+table(usda$`CROPS Scope Certification Status`)
+table(usda$`HANDLING Scope Certification Status`)
+```
+There are no organizations with lapsed certification in the sample. We can drop the certification column
+
+```{r certification_cols}
+colnames(usda)
+```
+
+```{r drop_certification}
+usda <- usda[ -c(4, 6)]
+```
+
+### Rename Columns
+```{r colnames_for_rename}
+colnames(usda)
+```
+
+```{r rename}
+usda <- plyr::rename(usda, replace = c("Operation ID" = "id", "Operation Name" = "name", "Certified Name" = "certifier", "Effective Date of CROPS Status" = "vineyard_since", "Effective Date of HANDLING Status" = "winery_since"))
+```
+
+### Preview result and save to rds
+```{r result}
+head(usda)
+
+saveRDS(usda, file = "USDA.rds")
+```
