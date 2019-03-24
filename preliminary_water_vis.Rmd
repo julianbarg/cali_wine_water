@@ -1,0 +1,47 @@
+---
+title: "California water visualization"
+author: "Julian Barg"
+date: "March 24, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import
+
+```{r import}
+library(readr)
+library(tidyverse)
+cali_water_full <- read_csv("data/cali_water.csv")
+glimpse(cali_water_full)
+```
+
+## Select relevant columns
+
+```{r columns}
+colnames(cali_water_full)
+```
+
+```{r select_cols}
+cali_water <- cali_water_full[ c(1, 5, 6, 9, 20)]
+
+glimpse(cali_water)
+```
+
+```{r monthly_full}
+library(lubridate)
+
+ylab <- c(7.5, 10, 12.5, 15, 17.5)
+
+cali_water %>%
+  group_by(Reporting_Month) %>%
+  summarize(water_production = sum(Production_Reported)) %>%
+  ggplot(aes(x=Reporting_Month, y=water_production)) +
+  geom_line() +
+  labs(x=element_blank(), y="Water production (in billion gallons)") +
+  scale_y_continuous(labels = paste0(ylab, "B"),
+                     breaks = 10^9 * ylab
+                     )
+```
