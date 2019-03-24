@@ -96,6 +96,25 @@ cali_water %>%
   scale_y_continuous(labels = paste0(ylab, "B"), breaks = 10^9 * ylab)
 ```
 
+## Organic farming
+
+> - Drought and organic farming are independent phenomena
+> - Drought could boost organic farming
+> - Prohibits use of synthetic fertilizers and pestizides
+> - No rules regarding water use
+> - Could protect water sources through less pollution, soil protection
+
+## Viticulture
+
+> - Producer more prominent
+> - More likely to advertise organic label
+> - Scale (number) in California lends itself to quantitative analysis
+
+## Outlook
+
+> - Organic farming can address some environmental concerns - but there is no reason to believe it can address all concerns. #Todo: add annual review source.
+> - More severe drought could threaten "luxury agriculture" - how would organic farming be affected?
+
 
 ## Data sources:
 
@@ -109,6 +128,7 @@ Vineyards/wineries:
   - https://github.com/julianbarg/wine_spider
 
 ## References:
+
 - Cadieux, K. V., Slocum, R., & Cadieux, K. V. (2015). What does it mean to do food justice? What does it mean to do food justice? Journal of Political Ecology, 22, 1–26. Retrieved from http://digitalcommons.hamline.edu/cla_faculty
 - Cooley, H., Donnelly, K., Phurisamban, R., & Subramanian, M. (2015). Impacts of California’s ongoing Drought: Agriculture.
 - Jurgilevich, A., Birge, T., Kentala-Lehtonen, J., Korhonen-Kurki, K., Pietikäinen, J., Saikku, L., & Schösler, H. (2016). Transition towards circular economy in the food system. Sustainability (Switzerland), 8(1), 1–14. https://doi.org/10.3390/su8010069
