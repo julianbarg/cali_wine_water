@@ -1,0 +1,54 @@
+---
+title: "1-4 Preprocessing vineyard directory"
+author: "Julian Barg"
+date: "March 23, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.3 Lodi sustainable
+
+### Read the full dataset
+
+The overview is more complete, but the details dataframe contains the addresses.
+```{r read_lodi}
+library(readr)
+library(tidyverse)
+
+directory_overview_full <- read_csv("../data/overview_all_vineyards.csv")
+directory_details_full <- read_csv("../data/details_all_vineyards.csv")
+```
+
+### Rename & drop 
+```{r rename}
+dir_details <- directory_details_full %>%
+  select(-c(Link)) %>%
+  plyr::rename(replace = c("Name" = "name", "Date" = "date", "Address" = "address"))
+
+dir_overview <- directory_overview_full %>%
+  select(-c(Link)) %>%
+  plyr::rename(replace = c("Name" = "name", "Date" = "date"))
+
+glimpse(dir_details)
+glimpse(dir_overview)
+```
+
+### Retain valid addresses
+
+Some of the addresses only contain rudimentary information. For each organization, we retain the entry with the longest address, to maximize our chances of getting an accurate address.
+```{r address}
+dir_details %>%
+  mutate(len_address = nchar(address)) %>%
+  group_by(name) %>%
+  arrange(desc(date)) %>%
+  arrange(desc(len_address)) %>%
+  top_n(1)
+  
+```
+
+
+
+
