@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 
-biodynamic_full <- read_csv("~/Documents/cali_wine_water/data/biodynamic_history.csv", col_types = "ccccDccccccflcl")
+biodynamic_full <- read_csv("../data/biodynamic_history.csv", col_types = "ccccDccccccflcl")
 glimpse(biodynamic_full)
 nrow(biodynamic_full)
 ```
@@ -101,5 +101,5 @@ biodynamic <- subset(biodynamic, select = -date)
 
 ### Save to rds
 ```{r rds}
-saveRDS(biodynamic, "preprocessed_data/biodynamic.rds")
+saveRDS(biodynamic, "../preprocessed_data/biodynamic.rds")
 ```

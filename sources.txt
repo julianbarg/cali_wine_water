@@ -2,5 +2,5 @@ cali_wine_water.csv:			https://www.waterboards.ca.gov/water_issues/programs/cons
 details_all_vineyards.csv:		https://github.com/julianbarg/wine_spider
 overview_all_vineyards.csv:		https://github.com/julianbarg/wine_spider
 biodynamic_history.csv:			https://github.com/julianbarg/wine_research
-lodi.csv				https://github.com/julianbarg/wine_research
-USDA_Certified_Wine_2018-01-11:		https://github.com/julianbarg/wine_research
+lodi.csv						https://github.com/julianbarg/wine_spide
+USDA_Certified_Wine_2018-01-11:	https://github.com/julianbarg/wine_research

@@ -48,7 +48,7 @@ Rosegrant et al. (2009)
 
 ## 3. The California drought
 
-![Climate zones of North America](images/us_climate.png){width=80%}
+![Climate zones of North America (Peel et al. 2007)](images/us_climate.png){width=80%}
 
 ---
 
@@ -96,24 +96,50 @@ cali_water %>%
   scale_y_continuous(labels = paste0(ylab, "B"), breaks = 10^9 * ylab)
 ```
 
-## Organic farming
+## 4. Organic farming
 
 > - Drought and organic farming are independent phenomena
 > - Drought could boost organic farming
 > - Prohibits use of synthetic fertilizers and pestizides
 > - No rules regarding water use
 > - Could protect water sources through less pollution, soil protection
+> - Could lead to system-wide increase of water consumption, bc lower yield per acre
 
-## Viticulture
+## Disclaimer on (quantified) water consumption
+
+> - Water can be extracted at any point, not all is measured
+> - Water consumption =/= water consumption
+>     - Grey water
+>     - Polluted water
+>     - Soil quality matters (water retention/evaporation)
+> - Different water sources
+
+## 5. Viticulture
 
 > - Producer more prominent
-> - More likely to advertise organic label
+> - Easy to match organic label with locality
 > - Scale (number) in California lends itself to quantitative analysis
+
+## Data
+
+> - Name, location, date of:
+>     - 4,032 vineyards/wineries
+>     - 278 USDA certified vineyards/wineries
+>     - 60 biodynamic vineyards/wineries
+>     - 33 sustainable vineyards/wineries (LODI rules)
+> - Circumference of "American Viticultural Areas"
+> - Maps
+> - Water production for California (subdivisions)
+> - A pool of institutional knowledge from qualitative fieldwork (CA & CA)
+
+---
+
+https://julianbarg.shinyapps.io/wine_illustration/
 
 ## Outlook
 
-> - Organic farming can address some environmental concerns - but there is no reason to believe it can address all concerns. #Todo: add annual review source.
-> - More severe drought could threaten "luxury agriculture" - how would organic farming be affected?
+> - Organic farming can address some environmental concerns - but there is no reason to believe it can address all concerns (Shennan et al. 2017)
+> - If food suppy is threatened - how would organic farming be affected?
 
 
 ## Data sources:
@@ -135,4 +161,4 @@ Vineyards/wineries:
 - Martinez, S., Hand, M., Pra, M. Da, Pollack, S., Ralston, K., Smith, T., … Newman, C. (2010). Local Food Systems: Concepts, Impacts, and Issues. Err 97, (97), 80.
 - Peel, M. C., Finlayson, B. L., & McMahon, T. A. (2007). Updated world map of the Köppen-Geiger climate classification. Hydrology and Earth System Sciences, 11(5), 1633–1644. https://doi.org/10.5194/hess-11-1633-2007
 - Rosegrant, M. W., Ringler, C., & Zhu, T. (2009). Water for Agriculture: Maintaining Food Security under Growing Scarcity. Annual Review of Environment and Resources, 34(1), 205–222. https://doi.org/10.1146/annurev.environ.030308.090351
-
+- Shennan, C., Krupnik, T. J., Baird, G., Cohen, H., Forbush, K., Lovell, R. J., & Olimpi, E. M. (2017). Organic and Conventional Agriculture: A Useful Framing? Annual Review of Environment and Resources, 42(1), 317–346. https://doi.org/10.1146/annurev-environ-110615-085750

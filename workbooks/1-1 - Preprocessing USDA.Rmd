@@ -18,7 +18,7 @@ We specify the date columns to specify that they are parsed correctly.
 library(tidyverse)
 library(readxl)
 
-usda_full <- read_excel("data/USDA_Certified_Wine_2019-01-11.xlsx", na = c(NA, ""), 
+usda_full <- read_excel("../data/USDA_Certified_Wine_2019-01-11.xlsx", na = c(NA, ""), 
                         col_types = c(rep("text", 10), "date", "date", "text", "date", rep("text", 4), "date", rep("text", 4), "date", rep("text", 4),
                                       "date", rep("text", 36), "date", "text"))
 head(usda_full)
@@ -220,5 +220,5 @@ usda <- plyr::rename(usda, replace = c("Operation ID" = "id", "Operation Name" =
 ```{r result}
 glimpse(usda)
 
-saveRDS(usda, file = "preprocessed_data/USDA.rds")
+saveRDS(usda, file = "../preprocessed_data/USDA.rds")
 ```

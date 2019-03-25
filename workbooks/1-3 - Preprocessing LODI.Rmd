@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(tidyverse)
 
-lodi_full <- read_csv("data/lodi.csv")
+lodi_full <- read_csv("../data/lodi.csv")
 glimpse(lodi_full)
 ```
 
@@ -73,5 +73,5 @@ lodi <- subset(lodi, select = -date)
 
 ### Save to rds
 ```{r rds}
-saveRDS(lodi, "preprocessed_data/lodi.rds")
+saveRDS(lodi, "../preprocessed_data/lodi.rds")
 ```
