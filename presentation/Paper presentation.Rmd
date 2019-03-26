@@ -63,6 +63,7 @@ Rosegrant et al. (2009)
 - Supplying 1/10 of US agricultural production (by value)
 - Biggest agricultural exporter
 - Absolute monopoly (in NA) on Olives, Walnuts, Artichokes, Dates etc.
+- Produces many luxury products (olive oil, wine, dates, cashews...)
 
 ---
 
@@ -96,15 +97,6 @@ cali_water %>%
   scale_y_continuous(labels = paste0(ylab, "B"), breaks = 10^9 * ylab)
 ```
 
-## 4. Organic farming
-
-> - Drought and organic farming are independent phenomena
-> - Drought could boost organic farming
-> - Prohibits use of synthetic fertilizers and pestizides
-> - No rules regarding water use
-> - Could protect water sources through less pollution, soil protection
-> - Could lead to system-wide increase of water consumption, bc lower yield per acre
-
 ## Disclaimer on (quantified) water consumption
 
 > - Water can be extracted at any point, not all is measured
@@ -113,6 +105,18 @@ cali_water %>%
 >     - Polluted water
 >     - Soil quality matters (water retention/evaporation)
 > - Different water sources
+>     - Rain water
+>     - Ground water
+>     - Reclaimed water
+
+## 4. Organic farming
+
+> - Drought and organic farming are independent phenomena
+> - Drought could boost organic farming
+> - Prohibits use of synthetic fertilizers and pestizides
+> - No rules regarding water use
+> - Could protect water sources through less pollution, soil protection
+> - Could lead to system-wide increase of water consumption, bc lower yield per acre
 
 ## 5. Viticulture
 
@@ -140,7 +144,8 @@ https://julianbarg.shinyapps.io/wine_illustration/
 
 > - Organic farming can address some environmental concerns - but there is no reason to believe it can address all concerns (Shennan et al. 2017)
 > - If food suppy is threatened - how would organic farming be affected?
-
+> - In the long-term we will see more changes, either top-down or bottom-up.
+> - How will decision makers/stakeholders react if high-status industry (organic/winemaking) is regulated/threatened.
 
 ## Data sources:
 
