@@ -48,11 +48,11 @@ Rosegrant et al. (2009)
 
 ## 3. The California drought
 
-![Climate zones of North America (Peel et al. 2007)](images/us_climate.png){width=80%}
+![Climate zones of North America (Peel et al. 2007)](../images/us_climate.png){width=80%}
 
 ---
 
-![Mediterranian climate zones](images/mediterranian.png){width=90%}
+![Mediterranian climate zones](../images/mediterranian.png){width=90%}
 
 ---
 
@@ -79,13 +79,13 @@ Rosegrant et al. (2009)
 
 ### Precipitation
 
-![](images/california_precipitation.png){width=80%}
+![](../images/california_precipitation.png){width=80%}
 https://www.ncdc.noaa.gov/cag/statewide/time-series/4/pcp/60/6/1960-2019?base_prd=true&firstbaseyear=1920&lastbaseyear=2019&filter=true&filterType=loess
 
 ## Water use{.smaller}
 
 ```{r water_use, message = FALSE, echo = TRUE, fig.height=3, fig.width=8}
-cali_water <- read_csv("data/cali_water.csv")
+cali_water <- read_csv("../data/cali_water.csv")
 ylab <- c(7.5, 10, 12.5, 15, 17.5)
 cali_water %>%
   group_by(Reporting_Month) %>%
@@ -151,7 +151,7 @@ California water data:
 Vineyards/wineries: 
 
   - https://github.com/julianbarg/wine_spider 
-  - https://github.com/julianbarg/wine_spider
+  - https://github.com/julianbarg/wine_research
 
 ## References:
 
