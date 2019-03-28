@@ -1,0 +1,54 @@
+---
+title: "California land use"
+author: "Julian Barg"
+date: "March 28, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import data
+
+```{r import}
+library(readr)
+land_use_full <- read_csv("../data/MajorLandUse.csv")
+glimpse(land_use_full)
+```
+
+```{r clean}
+agriculture_land_use <- data.frame(year=as.factor(land_use_full$Year), 
+                                   state_region=as.factor(land_use_full$`Region or State`),
+                                   cropland=as.integer(land_use_full$`Total cropland`),
+                                   grassland=as.integer(land_use_full$`Grassland pasture and range`),
+                                   total_land=as.integer(land_use_full$`Total land`))
+glimpse(agriculture_land_use)
+```
+
+```{r list regions}
+unique(agriculture_land_use$state_region)
+```
+
+```{r remove_regions}
+regions <- c("Northeast", "Pacific", "Corn Belt", "U.S. total", "Appalachian", "Southern Plains", "Southeast", "Delta States", "48 States", "Lake States", "Northern Plains", "Mountain")
+
+agriculture_land_use <- agriculture_land_use[!(agriculture_land_use$state_region %in% regions), ]
+```
+
+```{r calculate_agriculture_use}
+agriculture_land_use$agriculture <- agriculture_land_use$cropland + agriculture_land_use$grassland
+glimpse(agriculture_land_use)
+```
+
+```{r agriculture_use}
+agriculture_land_use %>%
+  filter(year == 2012) %>%
+  mutate(percent_agriculture = agriculture/total_land) %>%
+  arrange(percent_agriculture) %>%
+  mutate(n=row_number()) %>%
+  ggplot(aes(x=n, y=percent_agriculture)) +
+  geom_bar(stat="identity")
+
+```
