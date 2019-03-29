@@ -39,16 +39,31 @@ agriculture_land_use <- agriculture_land_use[!(agriculture_land_use$state_region
 
 ```{r calculate_agriculture_use}
 agriculture_land_use$agriculture <- agriculture_land_use$cropland + agriculture_land_use$grassland
+agriculture_land_use$agriculture_percent <- agriculture_land_use$agriculture / agriculture_land_use$total_land
 glimpse(agriculture_land_use)
 ```
 
 ```{r agriculture_use}
+california_agriculture_2012 = agriculture_land_use[which(agriculture_land_use$state_region == "California" & 
+                                                         agriculture_land_use$year == 2012), ]$agriculture_percent
+
 agriculture_land_use %>%
   filter(year == 2012) %>%
-  mutate(percent_agriculture = agriculture/total_land) %>%
-  arrange(percent_agriculture) %>%
+  arrange(desc(agriculture_percent)) %>%
   mutate(n=row_number()) %>%
-  ggplot(aes(x=n, y=percent_agriculture)) +
-  geom_bar(stat="identity")
+  ggplot(aes(x=n, y=agriculture_percent)) +
+  geom_bar(stat="identity") +
+  geom_hline(yintercept=california_agriculture_2012, color="red") +
+  annotate(geom="text", label="California", x=50, y=california_agriculture_2012+0.01, hjust=0, vjust=0) +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title="% of land used for agriculture in the US by state", 
+       y="% of land used for agriculture", 
+       x="States (ordered by % of land used for agriculture)") +
+  theme_minimal() +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank()) 
+```
 
+```{r save_plot}
+ggsave("california_land_use.png", plot, width = 9, height = 6)
 ```
