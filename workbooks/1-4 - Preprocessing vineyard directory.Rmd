@@ -38,17 +38,47 @@ glimpse(dir_overview)
 
 ### Retain valid addresses
 
-Some of the addresses only contain rudimentary information. For each organization, we retain the entry with the longest address, to maximize our chances of getting an accurate address.
+Some of the addresses only contain rudimentary information. For each organization, we retain the entry with the longest address, to maximize our chances of getting an accurate address. We assume that vineyards & vineries do not relocate.
 ```{r address}
-dir_details %>%
+dir_details <- dir_details %>%
   mutate(len_address = nchar(address)) %>%
   group_by(name) %>%
-  arrange(desc(date)) %>%
-  arrange(desc(len_address)) %>%
-  top_n(1)
-  
+  arrange(desc(len_address), desc(date)) %>%
+  filter(row_number() == 1) %>%
+  select(-len_address)
+
+glimpse(dir_details)
 ```
 
+### Downsample overview to year
+```{r downsample_overview}
+library(lubridate)
+
+dir_overview <- dir_overview %>%
+  mutate(year = year(date)) %>%
+  group_by(name, year) %>%
+  mutate(last = last(date)) %>%
+  filter(date == last) %>%
+  ungroup() %>%
+  select(-c(date, last))
+
+glimpse(dir_overview)
+nrow(dir_overview)
+```
+
+### Join overview with addresses from dir_details
+
+```{r match}
+directory <- left_join(dir_overview, subset(dir_details, select=c(name, address)))
+glimpse(directory)
+sum(is.na(directory$address))
+length(unique(directory[is.na(directory$address), ]$name))
+```
+
+### Save to rds
+```{r rds}
+saveRDS(directory, "../preprocessed_data/directory.rds")
+```
 
 
 

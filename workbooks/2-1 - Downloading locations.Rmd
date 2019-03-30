@@ -1,0 +1,98 @@
+---
+title: "2-1 - Downloading locations"
+author: "Julian Barg"
+date: "March 26, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 2.1 Merging
+
+### Read data
+```{r read}
+library(readr)
+directory <- read_rds("../preprocessed_data/directory.rds")
+usda <- read_rds("../preprocessed_data/USDA.rds")
+biodynamic <- read_rds("../preprocessed_data/biodynamic.rds")
+lodi <- read_rds("../preprocessed_data/lodi.rds")
+```
+
+### Add location
+```{r register_google}
+library(tidyverse)
+library(ggmap)
+
+key <- readChar('../maps_key.txt', file.info('../maps_key.txt')$size)
+register_google(key=key)
+```
+
+### Load and inspect map
+```{r maps}
+roadmap <- get_map("California", zoom = 6, source = "google", 
+                      maptype = "roadmap")  # Using Google Maps.
+toner_lite <- get_map("California", zoom = 6, source = "google", 
+                       maptype = "toner-lite") # Using Stamen.
+toner_lines <- get_map("California", zoom = 6, source = "google", 
+                       maptype = "toner-lines")
+ggmap(roadmap)
+ggmap(toner_lite)
+```
+
+### Get locations
+```{r loc_usda}
+usda_loc <- usda %>%
+  mutate(loc = paste0(address, "\nCA")) %>%
+  mutate_geocode(location = loc) %>%
+  select(-loc)
+```
+
+```{r loc_biodynamic}
+biodynamic_loc <- biodynamic %>%
+  mutate_geocode(location = address)
+```
+
+```{r loc_lodi}
+lodi_loc <- lodi %>%
+  mutate_geocode(location = address)
+```
+
+```{r loc_directory}
+directory$lon <- NA
+directory$lat <- NA
+
+for (n in 1:nrow(directory)){
+  address <- directory$address[n]
+  if (!is.na(address)){
+    already <- match(address, directory$address)
+    # The string is taken from the column that we are looking for matches in, so we do not need to check for NAs.
+    if (already < n){
+      directory$lon[n] <- directory$lon[already]
+      directory$lat[n] <- directory$lat[already]
+    } else {
+      loc <- geocode(address)
+    directory$lon[n] <- loc$lon
+    directory$lat[n] <- loc$lat
+    }
+  }
+}
+```
+
+### Save data with locations
+```{r save_usda}
+saveRDS(usda_loc, "../preprocessed_data/USDA_loc.rds")
+```
+
+```{r save_biodynamic}
+saveRDS(usda_loc, "../preprocessed_data/biodynamic_loc.rds")
+```
+
+```{r save_lodi}
+saveRDS(lodi_loc, "../preprocessed_data/lodi_loc.rds")
+```
+
+```{r save_directory}
+saveRDS(directory, "../preprocessed_data/directory_loc.rds")
+```
