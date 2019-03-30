@@ -1,0 +1,147 @@
+---
+title: "2-2 - Directory to tidy format"
+author: "Julian Barg"
+date: "March 30, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## 2-2 Directory to tidy formar
+
+### Read directory
+```{r read}
+usda <- readRDS("../preprocessed_data/USDA_loc.rds")
+glimpse(usda)
+```
+
+### Data type to factor
+```{r factor}
+usda$id <- as.factor(usda$id)
+usda$name <- as.factor(usda$name)
+usda$certifier <- as.factor(usda$`Certifier Name`)
+usda$address <- as.factor(usda$address)
+
+colnames(usda)
+```
+
+```{r drop}
+usda <- usda[-3]
+```
+
+### Split vineyard & winery observations
+```{r vineyards}
+usda_vineyards <- usda[usda$vineyard, ]
+```
+
+```{r wineries}
+usda_wineries <- usda[usda$winery, ]
+```
+
+```{r vineyard_winery}
+usda_vineyards_winery <- usda[(usda$vineyard & usda$winery), ]
+```
+
+### Delete obsolete columns
+```{r list_obsolete}
+colnames(usda_vineyards)
+```
+
+```{r drop_obsolete}
+usda_vineyards <- usda_vineyards[ -c(4, 6, 7)]
+usda_wineries <- usda_wineries[ -c(3, 6, 7)]
+usda_vineyards_winery <- usda_vineyards_winery[ -c(6, 7)]
+```
+
+### Transform into time panel
+
+Vineyards panel
+```{r vineyards_panel}
+library(lubridate)
+vineyards_long <- data.frame()
+usda_vineyards$year <- NA
+# We create a time interval for each observation. Because we test by year end, 
+# we add one year add the end to ensure that the date "2019-12-31" is within the interval for all observations.
+usda_vineyards$interval <- interval(usda_vineyards$vineyard_since, (now() + years(1)))
+
+start_year <- year(min(usda_vineyards$vineyard_since))
+end_year <- year(now())
+for (year in start_year:end_year){
+  included <- date(paste0(year, "-12-31")) %within% usda_vineyards$interval
+  observations <- usda_vineyards[included, ]
+  observations$year <- year
+  vineyards_long <- rbind(vineyards_long, observations)
+}
+```
+
+```{r find_obsolete_vineyard}
+colnames(vineyards_long)
+```
+
+```{r drop_obsolete_vineyard}
+vineyards_long <- vineyards_long[ -c(3, 9)]
+```
+
+Wineries panel
+```{r wineries_panel}
+wineries_long <- data.frame()
+usda_wineries$year <- NA
+# We create a time interval for each observation. Because we test by year end, 
+# we add one year add the end to ensure that the date "2019-12-31" is within the interval for all observations.
+usda_wineries$interval <- interval(usda_wineries$winery_since, (now() + years(1)))
+
+start_year <- year(min(usda_wineries$winery_since))
+end_year <- year(now())
+for (year in start_year:end_year){
+  included <- date(paste0(year, "-12-31")) %within% usda_wineries$interval
+  observations <- usda_wineries[included, ]
+  observations$year <- year
+  wineries_long <- rbind(wineries_long, observations)
+}
+```
+
+```{r find_obsolete_winery}
+colnames(wineries_long)
+```
+
+```{r remove_obsolete_winery}
+wineries_long <- wineries_long[ -c(3, 9)]
+```
+
+Vineyard & winery panel
+```{r vineyards_wineries_panel}
+vineyards_wineries_long <- data.frame()
+usda_vineyards$year <- NA
+# We create a time interval for each observation. Because we test by year end, 
+# we add one year add the end to ensure that the date "2019-12-31" is within the interval for all observations.
+usda_vineyards_winery$vineyard_winery_since <- pmax(usda_vineyards_winery$vineyard_since, 
+                                                    usda_vineyards_winery$winery_since)
+usda_vineyards_winery$interval <- interval(usda_vineyards_winery$vineyard_winery_since, (now() + years(1)))
+
+start_year <- year(min(int_start(usda_vineyards_winery$interval)))
+end_year <- year(now())
+for (year in start_year:end_year){
+  included <- date(paste0(year, "-12-31")) %within% usda_vineyards_winery$interval
+  observations <- usda_vineyards_winery[included, ]
+  observations$year <- year
+  vineyards_wineries_long <- rbind(vineyards_wineries_long, observations)
+}
+```
+
+```{r find_obsolete_vineyard_winery}
+colnames(vineyards_wineries_long)
+```
+
+```{r remove_obsolete_vineyard_winery}
+vineyards_wineries_long <- vineyards_wineries_long[ -c(3, 4, 9, 10)]
+```
+
+### Save new stuff
+```{r save}
+saveRDS(vineyards_long, "../preprocessed_data/vineyards_long.rds")
+saveRDS(wineries_long, "../preprocessed_data/wineries_long.rds")
+saveRDS(vineyards_wineries_long, "../preprocessed_data/vineyards_wineries_long.rds")
+```
