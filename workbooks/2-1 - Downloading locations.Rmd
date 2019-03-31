@@ -59,6 +59,7 @@ lodi_loc <- lodi %>%
   mutate_geocode(location = address)
 ```
 
+The directory is very long. We might need a workaround for the Google maps api limitation (max 1,400 calls per day.)
 ```{r loc_directory}
 directory$lon <- NA
 directory$lat <- NA
@@ -80,6 +81,42 @@ for (n in 1:nrow(directory)){
 }
 ```
 
+In case we run into the daily limit and have some uncoded observations left, can run the below block to get those.
+```{r get_rest}
+for (n in 1:nrow(directory)){
+  address <- directory$address[n]
+  lon <- directory$address[n]
+  if (!is.na(address) & !is.na(lon)){
+    already <- match(address, directory$address)
+    # The string is taken from the column that we are looking for matches in, so we do not need to check for NAs.
+    if (already < n){
+      directory$lon[n] <- directory$lon[already]
+      directory$lat[n] <- directory$lat[already]
+    } else {
+      loc <- geocode(address)
+    directory$lon[n] <- loc$lon
+    directory$lat[n] <- loc$lat
+    }
+  }
+}
+```
+
+We can also run this to selectively add geolocations for addresses that we have already encountered.
+```{r copy_down}
+for (n in 1:nrow(directory)){
+  address <- directory$address[n]
+  
+  if (!is.na(address)){
+    already <- match(address, directory$address)
+    # The string is taken from the column that we are looking for matches in, so we do not need to check for NAs.
+    if (already < n){
+      directory$lon[n] <- directory$lon[already]
+      directory$lat[n] <- directory$lat[already]
+    }
+  }  
+}
+```  
+  
 ### Save data with locations
 ```{r save_usda}
 saveRDS(usda_loc, "../preprocessed_data/USDA_loc.rds")
