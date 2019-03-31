@@ -1,0 +1,36 @@
+---
+title: "2-3 Cache maps"
+author: "Julian Barg"
+date: "March 31, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 2-3 Cache maps
+```{r connect_api}
+library(ggmap)
+
+key <- readChar('../maps_key.txt', file.info('../maps_key.txt')$size)
+register_google(key=key)
+```
+
+```{r maps}
+roadmap <- get_map("California", zoom = 6, source = "google", 
+                      maptype = "roadmap")  # Using Google Maps.
+toner_lite <- get_map("California", zoom = 6, source = "google", 
+                       maptype = "toner-lite") # Using Stamen.
+toner_lines <- get_map("California", zoom = 6, source = "google", 
+                       maptype = "toner-lines")
+ggmap(roadmap)
+ggmap(toner_lite)
+ggmap(toner_lines)
+```
+
+```{r save_maps}
+saveRDS(roadmap, "../preprocessed_data/roadmap.rds")
+saveRDS(toner_lite, "../preprocessed_data/toner_lite.rds")
+saveRDS(toner_lines, "../preprocessed_data/toner_lines.rds")
+```
