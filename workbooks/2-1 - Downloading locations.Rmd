@@ -81,7 +81,7 @@ for (n in 1:nrow(directory)){
 }
 ```
 
-In case we run into the daily limit and have some uncoded observations left, can run the below block to get those.
+In case we run into the daily limit and have some uncoded observations left, can run the below block to get those the next day.
 ```{r get_rest}
 for (n in 1:nrow(directory)){
   address <- directory$address[n]
