@@ -1,0 +1,93 @@
+---
+title: "3 - Create illustrations"
+author: "Julian Barg"
+date: "March 31, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r tidy}
+library(tidyverse)
+library(ggmap)
+library(ggExtra)
+library(gridExtra)
+```
+
+## 3 - Create Illustrations
+
+### Prepare color palette
+```{r colors}
+library(viridisLite)
+colors <- rev(magma(16))
+colors_log <- colors[-c(7, 8, 10, 11, 13, 15)]
+```
+
+### Load maps
+```{r maps}
+roadmap <- readRDS("../preprocessed_data/roadmap.rds")
+toner_lite <- readRDS("../preprocessed_data/toner_lite.rds")
+toner_lines <- readRDS("../preprocessed_data/toner_lines.rds")
+
+ggmap(roadmap)
+ggmap(toner_lite)
+ggmap(toner_lines)
+```
+
+### Illustration of directory
+```{r load_directory}
+directory <- readRDS("../preprocessed_data/directory_loc.rds")
+```
+
+### Remove observations that only say "California" as address.
+```{r get_insight}
+head(sort(table(directory$address), decreasing=TRUE))
+```
+
+```{r remove_incomplete}
+nrow(directory)
+directory <- directory[directory$address != "California", ]
+nrow(directory)
+```
+
+```{r plot_directory_hex}
+directory_map_hex <- ggmap(roadmap, base_layer = ggplot(directory, aes(lon, lat))) +
+  coord_cartesian() +
+  geom_hex(alpha=0.95) + 
+  scale_fill_gradientn(colors=colors_log, trans="log", breaks = c(1, 10 , 100, 500, 1000, 4000)) + 
+  geom_rug(alpha=0.005)
+
+directory_map_hex
+```
+
+```{r plot_datapoints}
+directory_map_point <- ggmap(roadmap, base_layer = ggplot(directory, aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.01, stroke=0, position=position_jitter(0.02, 0.02))
+directory_map_point
+```
+
+```{r plot_directory_marginal1}
+directory_map_density <- ggExtra::ggMarginal(directory_map_point, type="histogram")
+directory_map_density
+```
+
+```{r plot_directory_marginal2}
+xdensity <- ggplot(directory, aes(x=lon)) +
+  geom_histogram()
+
+ydensity <- ggplot(directory, aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip()
+
+blankPlot <- ggplot()+geom_blank()+ theme_void()
+
+gridExtra::grid.arrange(xdensity, blankPlot, directory_map_point, ydensity, 
+                        ncol=2, nrow=2, 
+                        widths=c(4, 1.4), 
+                        heights=c(1.4, 4))
+```
+
+
