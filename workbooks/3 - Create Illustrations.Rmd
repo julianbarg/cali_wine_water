@@ -1,0 +1,278 @@
+---
+title: "3 - Create illustrations"
+author: "Julian Barg"
+date: "April 1, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r tidy}
+library(tidyverse)
+library(ggmap)
+library(ggExtra)
+library(gridExtra)
+```
+
+## 3 - Create Illustrations
+
+### Prepare color palette
+```{r colors}
+library(viridisLite)
+colors <- rev(magma(16))
+colors_log <- colors[-c(7, 8, 10, 11, 13, 15)]
+```
+
+### Load maps
+```{r maps, cache=TRUE}
+roadmap <- readRDS("../preprocessed_data/roadmap.rds")
+toner_lite <- readRDS("../preprocessed_data/toner_lite.rds")
+toner_lines <- readRDS("../preprocessed_data/toner_lines.rds")
+napa_roadmap <- readRDS("../preprocessed_data/napa_roadmap.rds")
+napa_toner_lite <- readRDS("../preprocessed_data/napa_toner_lite.rds")
+napa_toner_lines <- readRDS("../preprocessed_data/napa_toner_lines.rds")
+
+ggmap(roadmap)
+ggmap(toner_lite)
+ggmap(toner_lines)
+ggmap(napa_roadmap)
+ggmap(napa_toner_lite)
+ggmap(napa_toner_lines)
+```
+
+Prepare blank plot
+```{r blank}
+blankPlot <- ggplot()+geom_blank()+ theme_void()
+```
+
+### Load directory
+```{r load_directory}
+directory <- readRDS("../preprocessed_data/directory_loc.rds")
+```
+
+Remove observations that only say "California" as address.
+```{r get_insight}
+head(sort(table(directory$address), decreasing=TRUE))
+```
+
+```{r remove_incomplete}
+nrow(directory)
+directory <- directory[directory$address != "California", ]
+nrow(directory)
+```
+
+### Test plot directory - 2015
+
+```{r}
+directory_map_point <- ggmap(roadmap, base_layer = ggplot(subset(directory, year==2015), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.1, stroke=0, position=position_jitter(0.02, 0.02)) +
+  geom_density2d()
+directory_map_point
+```
+
+```{r}
+napa_map_point <- ggmap(napa_roadmap, base_layer = ggplot(subset(directory, year==2015), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.1, stroke=0, position=position_jitter(0.01, 0.01)) +
+  geom_density2d()
+napa_map_point
+```
+
+### Load USDA
+```{r load_usda}
+usda <- readRDS("../preprocessed_data/usda_long.rds")
+```
+
+### Test plot USDA - 2015
+```{r}
+directory_map_point <- ggmap(roadmap, base_layer = ggplot(subset(usda, year==2015), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.3, stroke=0, position=position_jitter(0.1, 0.1)) +
+  geom_density_2d()
+directory_map_point
+```
+
+```{r}
+napa_map_point <- ggmap(napa_roadmap, base_layer = ggplot(subset(usda, year==2015), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.5, position=position_jitter(0.3, 0.3)) +
+  geom_density2d()
+napa_map_point
+```
+
+### Final plots - directory progression
+
+
+```{r directory_2015}
+directory_2015 <- ggmap(roadmap, base_layer = ggplot(subset(directory, year==2015), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.1, stroke=0, position=position_jitter(0.02, 0.02)) +
+  geom_density2d()
+
+xdensity_2015 <- ggplot(subset(directory, year==2015), aes(x=lon)) +
+  geom_histogram() +
+  scale_x_continuous(limits=c(-126, -113)) +
+  labs(y=element_blank(), x=element_blank())
+
+ydensity_2015 <- ggplot(subset(directory, year==2015), aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip() +
+  scale_x_continuous(limits=c(31.5, 41.5)) +
+  labs(y=element_blank(), x=element_blank())
+
+distribution_2015 <- gridExtra::arrangeGrob(xdensity_2015, blankPlot, directory_2015, ydensity_2015, 
+                                            ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+
+grid::grid.draw(distribution_2015)
+
+ggsave("../images/distribution_2015.png", distribution_2015, width=7, height=7)
+```
+
+```{r directory_2017}
+directory_2017 <- ggmap(roadmap, base_layer = ggplot(subset(directory, year==2017), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.1, stroke=0, position=position_jitter(0.02, 0.02)) +
+  geom_density2d()
+
+xdensity_2017 <- ggplot(subset(directory, year==2017), aes(x=lon)) +
+  geom_histogram() +
+  scale_x_continuous(limits=c(-126, -113)) +
+  labs(y=element_blank(), x=element_blank())
+
+ydensity_2017 <- ggplot(subset(directory, year==2017), aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip() +
+  scale_x_continuous(limits=c(31.5, 41.5)) +
+  labs(y=element_blank(), x=element_blank())
+
+distribution_2017 <- gridExtra::arrangeGrob(xdensity_2017, blankPlot, directory_2017, ydensity_2017, 
+                                            ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+
+grid::grid.draw(distribution_2017)
+
+ggsave("../images/distribution_2017.png", distribution_2017, width=7, height=7)
+```
+
+```{r directory_2019}
+directory_2019 <- ggmap(roadmap, base_layer = ggplot(subset(directory, year==2019), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.1, stroke=0, position=position_jitter(0.02, 0.02)) +
+  geom_density2d()
+
+xdensity_2019 <- ggplot(subset(directory, year==2019), aes(x=lon)) +
+  geom_histogram() +
+  scale_x_continuous(limits=c(-126, -113)) +
+  labs(y=element_blank(), x=element_blank())
+
+ydensity_2019 <- ggplot(subset(directory, year==2019), aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip() +
+  scale_x_continuous(limits=c(31.5, 41.5)) +
+  labs(y=element_blank(), x=element_blank())
+
+distribution_2019 <- gridExtra::arrangeGrob(xdensity_2019, blankPlot, directory_2019, ydensity_2019, 
+                                            ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+
+grid::grid.draw(distribution_2019)
+
+ggsave("../images/distribution_2019.png", distribution_2019, width=7, height=7)
+```
+
+### Final plots - usda progression
+
+```{r usda_2015}
+usda_2015 <- ggmap(roadmap, base_layer = ggplot(subset(usda, year==2015), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.2, stroke=0.5, position=position_jitter(0.1, 0.1)) +
+  geom_density2d()
+
+usda_xdensity_2015 <- ggplot(subset(usda, year==2015), aes(x=lon)) +
+  geom_histogram() +
+  scale_x_continuous(limits=c(-126, -113)) +
+  labs(y=element_blank(), x=element_blank())
+
+usda_ydensity_2015 <- ggplot(subset(usda, year==2015), aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip() +
+  scale_x_continuous(limits=c(31.5, 41.5)) +
+  labs(y=element_blank(), x=element_blank())
+
+usda_2015 <- gridExtra::arrangeGrob(usda_xdensity_2015, blankPlot, usda_2015, usda_ydensity_2015, 
+                                            ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+
+grid::grid.draw(usda_2015)
+
+ggsave("../images/usda_2015.png", usda_2015, width=7, height=7)
+```
+
+```{r usda_2017}
+usda_2017 <- ggmap(roadmap, base_layer = ggplot(subset(usda, year==2017), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.2, stroke=0.5, position=position_jitter(0.1, 0.1)) +
+  geom_density2d()
+
+usda_xdensity_2017 <- ggplot(subset(usda, year==2017), aes(x=lon)) +
+  geom_histogram() +
+  scale_x_continuous(limits=c(-126, -113)) +
+  labs(y=element_blank(), x=element_blank())
+
+usda_ydensity_2017 <- ggplot(subset(usda, year==2017), aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip() +
+  scale_x_continuous(limits=c(31.5, 41.5)) +
+  labs(y=element_blank(), x=element_blank())
+
+usda_2017 <- gridExtra::arrangeGrob(usda_xdensity_2017, blankPlot, usda_2017, usda_ydensity_2017, 
+                                            ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+
+grid::grid.draw(usda_2017)
+
+ggsave("../images/usda_2017.png", usda_2017, width=7, height=7)
+```
+
+```{r usda_2019}
+usda_2019 <- ggmap(roadmap, base_layer = ggplot(subset(usda, year==2019), aes(lon, lat))) +
+  coord_cartesian() +
+  geom_point(alpha=0.2, stroke=0.5, position=position_jitter(0.1, 0.1)) +
+  geom_density2d()
+
+usda_xdensity_2019 <- ggplot(subset(usda, year==2019), aes(x=lon)) +
+  geom_histogram() +
+  scale_x_continuous(limits=c(-126, -113)) +
+  labs(y=element_blank(), x=element_blank())
+
+usda_ydensity_2019 <- ggplot(subset(usda, year==2019), aes(x=lat)) +
+  geom_histogram() + 
+  coord_flip() +
+  scale_x_continuous(limits=c(31.5, 41.5)) +
+  labs(y=element_blank(), x=element_blank())
+
+usda_2019 <- gridExtra::arrangeGrob(usda_xdensity_2019, blankPlot, usda_2019, usda_ydensity_2019, 
+                                            ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+
+grid::grid.draw(usda_2019)
+
+ggsave("../images/usda_2019.png", usda_2019, width=7, height=7)
+```
+
+### Final plots - Napa zoom
+
+```{r directory_napa}
+directory_napa <- ggmap(napa_roadmap, base_layer = ggplot(subset(directory, year==2019), aes(lon, lat))) +
+  geom_point(alpha=0.3, stroke=0, position=position_jitter(0.05, 0.05)) +
+  geom_density2d()
+directory_napa
+ggsave("../images/directory_napa.png", directory_napa, width=7, height=7)
+```
+
+```{r directory_usda}
+usda_napa <- ggmap(napa_roadmap, base_layer = ggplot(subset(usda, year==2019), aes(lon, lat))) +
+  geom_point(alpha=0.5, position=position_jitter(0.05, 0.05)) +
+  geom_density2d()
+usda_napa
+ggsave("../images/usda_napa.png", usda_napa, width=7, height=7)
+```
+
