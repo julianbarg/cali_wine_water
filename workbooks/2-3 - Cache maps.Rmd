@@ -34,3 +34,21 @@ saveRDS(roadmap, "../preprocessed_data/roadmap.rds")
 saveRDS(toner_lite, "../preprocessed_data/toner_lite.rds")
 saveRDS(toner_lines, "../preprocessed_data/toner_lines.rds")
 ```
+
+```{r zoom_maps}
+napa_roadmap <- get_map("Napa Valley", zoom = 9, source = "google", 
+                      maptype = "roadmap")  # Using Google Maps.
+napa_toner_lite <- get_map("Napa Valley", zoom = 9, source = "google", 
+                       maptype = "toner-lite") # Using Stamen.
+napa_toner_lines <- get_map("Napa Valley", zoom = 9, source = "google", 
+                       maptype = "toner-lines")
+ggmap(napa_roadmap)
+ggmap(napa_toner_lite)
+ggmap(napa_toner_lines)
+```
+
+```{r save_zoom_maps}
+saveRDS(napa_roadmap, "../preprocessed_data/napa_roadmap.rds")
+saveRDS(napa_toner_lite, "../preprocessed_data/napa_toner_lite.rds")
+saveRDS(napa_toner_lines, "../preprocessed_data/napa_toner_lines.rds")
+```
