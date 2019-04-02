@@ -40,7 +40,7 @@ head(viticulture)
 
 ## Plot
 ```{r plot}
-viticulture %>%
+vicitulture_time <- viticulture %>%
   group_by(type, year) %>%
   mutate(n = n()) %>%
   ungroup() %>%
@@ -50,6 +50,8 @@ viticulture %>%
   labs(title="Viticulture in California: Number of Organizations by Type", 
        x = element_blank(), y = element_blank()) +
   scale_color_discrete(name="Type")
+vicitulture_time
+ggsave("../images/viticulture_time.png", vicitulture_time, height=7, width=7)
 ```
 
 
