@@ -1,0 +1,56 @@
+---
+=-title: "California viticulture change"
+author: "Julian Barg"
+date: "April 2, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tidyverse)
+```
+
+## Read data
+```{r read}
+organic <- readRDS("../preprocessed_data/usda_long.rds")
+all <- readRDS("../preprocessed_data/directory.rds")
+biodynamic <- readRDS("../preprocessed_data/biodynamic.rds")
+sustainable <- readRDS("../preprocessed_data/lodi.rds")
+head(organic, 3)
+head(all, 3)
+head(biodynamic, 3)
+head(sustainable, 3)
+```
+
+## Join
+```{r join}
+organic$type <- "organic"
+all$type <- "all"
+biodynamic$type <- "biodynamic"
+sustainable$type <- "sustainable (LODI)"
+
+cols <- c("name", "year", "type")
+
+viticulture <- rbind(organic[cols], all[cols], biodynamic[cols], sustainable[cols])
+head(viticulture)
+```
+
+## Plot
+```{r plot}
+viticulture %>%
+  group_by(type, year) %>%
+  mutate(n = n()) %>%
+  ungroup() %>%
+  ggplot(aes(x=year, y=n, color=type)) +
+  geom_line() +
+  scale_y_log10(breaks=c(1, 10, 30, 60, 100, 300, 1000, 4000)) +
+  labs(title="Viticulture in California: Number of Organizations by Type", 
+       x = element_blank(), y = element_blank()) +
+  scale_color_discrete(name="Type")
+```
+
+
+
