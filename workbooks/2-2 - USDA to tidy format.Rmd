@@ -10,6 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
+```{r library}
+library(lubridate)
+```
+
 ## 2-2 Directory to tidy formar
 
 ### Read directory
@@ -58,9 +62,34 @@ usda_vineyards_winery <- usda_vineyards_winery[ -c(6, 7)]
 
 ### Transform into time panel
 
+usda panel
+```{r usda_panel}
+usda_long <- data.frame()
+usda$year <- NA
+# We create a time interval for each observation. Because we test by year end, 
+# we add one year add the end to ensure that the date "2019-12-31" is within the interval for all observations.
+usda$interval <- interval(pmin(usda$vineyard_since, usda$winery_since, na.rm=TRUE), (now() + years(1)))
+
+start_year <- year(min(usda$vineyard_since, usda$winery_since, na.rm=TRUE))
+end_year <- year(now())
+for (year in start_year:end_year){
+  included <- date(paste0(year, "-12-31")) %within% usda$interval
+  observations <- usda[included, ]
+  observations$year <- year
+  usda_long <- rbind(usda_long, observations)
+}
+```
+
+```{r find_obsolete_usda_long}
+colnames(usda_long)
+```
+
+```{r drop_obsolete_usda_long}
+usda_long <- usda_long[ -c(3, 4, 6, 7, 10, 12)]
+```
+
 Vineyards panel
 ```{r vineyards_panel}
-library(lubridate)
 vineyards_long <- data.frame()
 usda_vineyards$year <- NA
 # We create a time interval for each observation. Because we test by year end, 
@@ -144,4 +173,5 @@ vineyards_wineries_long <- vineyards_wineries_long[ -c(3, 4, 9, 10)]
 saveRDS(vineyards_long, "../preprocessed_data/vineyards_long.rds")
 saveRDS(wineries_long, "../preprocessed_data/wineries_long.rds")
 saveRDS(vineyards_wineries_long, "../preprocessed_data/vineyards_wineries_long.rds")
+saveRDS(usda_long, "../preprocessed_data/usda_long.rds")
 ```
