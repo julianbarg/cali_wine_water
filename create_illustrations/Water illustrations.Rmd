@@ -1,0 +1,100 @@
+---
+title: "Water Illustrations"
+author: "Julian Barg"
+date: "April 4, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r import}
+library(tidyverse)
+library(lubridate)
+```
+
+### Load data
+```{r load}
+cali_water <- read_csv("../data/cali_water.csv")
+```
+
+### Plot over time
+```{r overview}
+ylab <- c(7.5, 10, 12.5, 15, 17.5)
+cali_water %>%
+  group_by(Reporting_Month) %>%
+  summarize(water_production = sum(Production_Reported)) %>%
+  ggplot(aes(x=Reporting_Month, y=water_production)) +
+  geom_line() +
+  labs(x=element_blank(), y="Water production (in billion gallons)") +
+  scale_y_continuous(labels = paste0(ylab, "B"), breaks = 10^9 * ylab)
+```
+
+### Utility companies
+
+Execute for overview of all water suppliers
+```{r table}
+# table(cali_water$Supplier_Name)
+```
+
+### Define area with biggest concentration of wine industry
+```{r define_viticulture}
+napa_surrounding <- c("Windsor, Town of", "Napa  City of", "Sonoma  City of")
+```
+
+### Plot water use in wine country and outside as test
+
+Napa surrounding
+```{r plot_wine}
+subset(cali_water, Supplier_Name %in% napa_surrounding) %>%
+  group_by(Reporting_Month) %>%
+  summarize(water_production = sum(Production_Reported)) %>%
+  ggplot(aes(x=Reporting_Month, y=water_production)) +
+  geom_line() +
+  labs(x=element_blank(), y="Water production")
+```
+
+State wide
+```{r plot_non_wine}
+subset(cali_water, !(Supplier_Name %in% napa_surrounding)) %>%
+  group_by(Reporting_Month) %>%
+  summarize(water_production = sum(Production_Reported)) %>%
+  ggplot(aes(x=Reporting_Month, y=water_production)) +
+  geom_line() +
+  labs(x=element_blank(), y="Water production")
+```
+
+```{r facet_df}
+napa_surrounding_df <- data.frame(where="napa_surrounding", subset(cali_water, Supplier_Name %in% napa_surrounding))
+other <- data.frame(where="other", subset(cali_water, !(Supplier_Name %in% napa_surrounding)))
+napa_city <- data.frame(where="napa", subset(cali_water, (Supplier_Name == "Napa  City of")))
+windsor <- data.frame(where="windsor", subset(cali_water, (Supplier_Name == "Windsor, Town of")))
+sonoma <- data.frame(where="sonoma", subset(cali_water, (Supplier_Name == "Sonoma  City of")))
+la <- data.frame(where="la", subset(cali_water, 
+                                    (Supplier_Name == "California-American Water Company Los Angeles District")))
+
+facet_df <- rbind(napa_surrounding_df, other, napa_city, windsor, sonoma, la)
+glimpse(facet_df,3)
+levels(facet_df$where)
+```
+
+```{r facet_labels}
+levels(facet_df$where) <- c("Napa and surrounding", "Rest of California", "Napa", "Windsor", "Sonoma", "Los Angeles")
+```
+
+```{r facet_illustration}
+water_illustration <- facet_df %>%
+  group_by(Reporting_Month, where) %>%
+  summarize(water_production = sum(Production_Reported)) %>%
+  ggplot(aes(x=Reporting_Month, y=water_production)) +
+  geom_line() +
+  labs(x=element_blank(), y=element_blank()) +
+  facet_wrap(~where, scales = "free_y", nrow=3)
+water_illustration
+```
+
+```{r save}
+ggsave("../images/water_illustration.png", water_illustration)
+```
+
